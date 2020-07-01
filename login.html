@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if error %}
+    <div class="notification is-danger">
+        {{ error }}
+    </div>
+{% endif %}
+
+<div class="column is-4 is-offset-4">
+    <h3 class="title">Welcome back!</h3>
+    <div class="box">
+        <form method="POST" action="/login">
+            <div class="field">
+                <div class="control">
+                    <i class="fa fa-user icon"></i>
+                    <input class="input is-large" type="username" name="username" placeholder="Username*" autofocus="">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <i class="fa fa-key icon"></i>
+                    <input class="input is-large" type="password" name="password" placeholder="Password*">
+                </div>
+            </div>
+
+            <div class="field">
+            </div>
+            <button class="button is-block is-info is-large is-fullwidth">Login</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

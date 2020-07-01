@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html>
+<title>Next_social</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+<!--      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <style>html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
+        .topnav input[type=text] {
+            float: left;
+            padding: 6px;
+            border: none;
+            margin-top: 8px;
+            margin-left: 40px;
+            font-size: 17px;
+        }
+        .topnav .search-container button {
+            float: left;
+            padding: 6px 10px;
+            margin-top: 8px;
+            margin-left: 1px;
+            background: #ddd;
+            font-size: 17px;
+            border: none;
+            cursor: pointer;
+        }
+        .topnav .search-container button:hover {
+            background: #ccc;
+
+        }
+        #map {
+          height: 200px;  /* The height is 400 pixels */
+          width: 100%;  /* The width is the width of the web page */
+         }
+        .dot {
+            float: right;
+            height: 10px;
+            width: 10px;
+            background-color: #d5f4e6;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        ::placeholder {
+            color: grey;
+        }
+
+</style>
+
+</head>
+
+
+<body class="w3-theme-l5">
+
+<!-- Navbar -->
+<div class="w3-top">
+    <div class="w3-bar w3-theme-d2 w3-left-align w3-large">
+<!--        <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>-->
+        <a href="#" class="w3-bar-item w3-button w3-padding-large w3-theme-d2"><i class="fa fa-home w3-margin-right"></i>Next_social</a>
+        <div class="topnav">
+            <div class="search-container">
+                <form method="POST" action="/home">
+                    <input type="text" name="search" placeholder="Search...">
+                    <button class="button w3-button w3-theme"><i class="fa fa-search"></i></button>
+                </form>
+            </div>
+        </div>
+        <a href="logout" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white">Logout</a>
+
+      {% if membership != None%}
+        <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white">Member</a>
+      {% elif membership == None and status == None%}
+        <a href="apply" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white">Apply Membership?</a>
+      {% else %}
+        <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white">Membership Pending</a>
+      {% endif %}
+    </div>
+</div>
+
+
+<!-- Page Container -->
+<div class="w3-container w3-content" style="max-width:1650px;margin-top:80px;position: relative; min-height: 90vh;">
+    <!-- The Grid -->
+    <div class="w3-row">
+        <!-- Left Column -->
+        <div class="w3-col m2">
+          <!-- Profile -->
+          <div class="w3-card w3-round w3-white">
+            <div class="w3-container"><br>
+             <h2 class="w3-center">{{current_user}}</h2>
+             <p class="w3-center"><img src="https://www.w3schools.com/w3images/avatar2.png" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
+             <hr>
+             <!--                if the user has a profile-->
+                {% if profile%}
+                <div id = "former" >
+                    <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i>Age: {{profile[1]}}</p >
+                    <p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i>Real Name: {{profile[2]}}</p >
+                    <button class="w3-button w3-theme-d2 w3-margin-bottom" onclick = "editshow()"><i class="fa fa-arrow-right"></i>  Edit</button>
+                </div>
+
+                <div id = "edit" style = "display: None">
+                    <form method="POST" action="/editProfile">
+                        <input class="w3-input" type="text" name = "create_age" placeholder="Age"><br>
+                        <input class="w3-input" type="text" name = "create_name" placeholder="Real Name"><br>
+                        <button class="button w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-arrow-right"></i>  Submit</button>
+                    </form>
+                </div>
+<!--                if a user doesn't have a profile-->
+                {% else %}
+                    <div class="w3-container w3-center">
+                        <p>Don't have a profile yet?</p >
+                        <p>Create one!</p >
+                        <form method="POST" action="/newProfile">
+                            <input class="w3-input" type="text" name = "create_age" placeholder="Age"><br>
+                            <input class="w3-input" type="text" name = "create_name" placeholder="Real Name"><br>
+                            <button class="button w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-arrow-right"></i>  Submit</button>
+                        </form>
+                    </div>
+                <br>
+                {% endif %}
+            </div>
+          </div><br>
+
+            <!-- Family -->
+          <div class="w3-card w3-round w3-white">
+            <div class="w3-container"><br>
+<!--                if the user has a profile-->
+                {% if family %}
+                <h5 class = "w3-center">Family member</h5><hr>
+                <div id = "former_family">
+                    <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i>Member: {{family[1]}}</p >
+                    <p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i>Relation: {{family[3]}}</p >
+                    <button class="w3-button w3-theme-d2 w3-margin-bottom" onclick = "editshow_family()"><i class="fa fa-arrow-right"></i>  Edit</button>
+                </div>
+
+                <div id = "edit_family" style = "display: None">
+                    <form method="POST" action="/editFamily">
+                        <input class="w3-input" type="text" name = "create_member" placeholder="Member"><br>
+                        <input class="w3-input" type="text" name = "create_relation" placeholder="Relation"><br>
+                        <button class="button w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-arrow-right"></i>  Refresh</button>
+                     </form>
+                </div>
+<!--                if a user doesn't have a family-->
+                {% else %}
+                    <div class="w3-container w3-center"><br>
+                        <p>Don't have a family yet?</p >
+                        <p>Set one!</p >
+                        <form method="POST" action="/newFamily">
+                            <input class="w3-input" type="text" name = "create_member" placeholder="Member"><br>
+                            <input class="w3-input" type="text" name = "create_relation" placeholder="Relation"><br>
+                            <button class="button w3-button w3-theme-d2 w3-margin-bottom">
+                            <i class="fa fa-arrow-right"></i>  Add</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+          </div><br>
+
+          <!-- Accordion -->
+          <div class="w3-card w3-round">
+            <div class="w3-white">
+                {% if red_point and membership %}
+                     <button onclick="myFunction('Demo1');remove_dot();" class="w3-button w3-block w3-theme-l1 w3-left-align"><i class="fa fa-circle-o-notch fa-fw w3-margin-right"></i> Feeds  <span style= "display: block" id = "remove_dot" class="dot"></span></button>
+                {% elif not red_point and membership%}
+                    <button onclick="myFunction('Demo1')" class="w3-button w3-block w3-theme-l1 w3-left-align"><i class="fa fa-circle-o-notch fa-fw w3-margin-right"></i> Feeds</button>
+                {% endif %}
+
+                <div id="Demo1" class="w3-hide w3-container">
+                <p><i class="fa fa-envelope fa-fw w3-margin-right"></i><a href="#" class="w3-bar-item w3-button" onclick="one_friend()">One_friend</a ></p>
+                <p><i class="fa fa-envelope fa-fw w3-margin-right"></i><a href="#" class="w3-bar-item w3-button" onclick="one_neighbor()">One_neighbor</a ></p>
+                <p><i class="fa fa-envelope fa-fw w3-margin-right"></i><a href="#" class="w3-bar-item w3-button" onclick="all_friends()">All_friends</a ></p>
+                <p><i class="fa fa-envelope fa-fw w3-margin-right"></i><a href="#" class="w3-bar-item w3-button" onclick="all_neighbors()">All_neighbors</a ></p>
+                <p><i class="fa fa-envelope fa-fw w3-margin-right"></i><a href="#" class="w3-bar-item w3-button" onclick="entire_block()">Entire block</a ></p>
+                <p><i class="fa fa-envelope fa-fw w3-margin-right"></i><a href="#" class="w3-bar-item w3-button" onclick="entire_hood()">Entire hood</a ></p>
+              </div>
+              <button onclick="myFunction('Demo2')" class="w3-button w3-block w3-theme-l1 w3-left-align"><i class="fa fa-address-book fa-fw w3-margin-right"></i> Block members</button>
+                <div id="Demo2" class="w3-hide w3-container">
+                  {% for item in members %}
+                    <section>
+                        <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:40px">
+                        <p><a href="#" class="w3-bar-item w3-button">{{item}}</a></p>
+                    </section>
+                  {% endfor %}
+                </div>
+              <button onclick="myFunction('Demo3')" class="w3-button w3-block w3-theme-l1 w3-left-align"><i class="fa fa-users fa-fw w3-margin-right"></i> Friends</button>
+              <div id="Demo3" class="w3-hide w3-container"><br>
+                  {% if friendship %}
+                      {% for item in friendship %}
+                          <form method="POST" action="/otherProfile">
+                              <div>
+                                <section>
+                                    <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:40px">
+                                    <p>
+                                        <a href="#"><button class="button w3-button w3-bar-item" onclick="member_profile()" name = "sdfs" value="{{item}}">{{item}}</button></a>
+                                    </p >
+                                </section>
+                              </div>
+                          </form>
+                      {% endfor %}
+                  {% else %}
+                    <p>None</p >
+                  {%endif%}
+              </div>
+            </div>
+          </div>
+          <br>
+
+            <!--            see others profiles-->
+            <div class="w3-card w3-round w3-white">
+                <div class="w3-container">
+                    {% if choose_name and other_profile_age and other_profile_name %}
+                    <div>
+                        <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i>User: {{choose_name}}</p >
+                        <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i>Age: {{other_profile_age}}</p >
+                        <p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i>Real Name: {{other_profile_name}}</p >
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <br>
+        <!-- End Left Column -->
+        </div>
+
+        <!-- Middle Column -->
+        <div class="w3-col m7">
+          <div class="w3-row-padding">
+            <div class="w3-col m12">
+              <div class="w3-card w3-round w3-white">
+                <div class="w3-container w3-padding">
+                    {%if membership%}
+                    <form method="POST" action="/newPost">
+                        <h6 class="w3-opacity">Start a New Post...</h6>
+                        <div class="field">
+                            <div class="control">
+                                <p>
+                                    <input class="w3-input w3-border" type="text" name="title" placeholder="Title">
+                                </p >
+                            </div>
+                        </div>
+                        <p>
+                            <textarea class="w3-input w3-border" name="content" placeholder="What's on your mind?"></textarea>
+                        </p >
+                        <div class="w3-row-padding">
+                        <div class="w3-third">
+                            <a href="newPost"><button class="button w3-button w3-theme"><i class="fa fa-pencil"></i>  Post</button></a>
+                        </div>
+                        <div class="w3-third">
+                            <select class="w3-select" name="selectauth" id="mySelect" onchange="javascript:doit();">
+                                <option value="" disabled selected>Authorization</option>
+                                <option value="auth1">One Friend</option>
+                                <option value="auth2">One Neighbor</option>
+                                <option value="auth3">All Friends</option>
+                                <option value="auth4">All Neighbors</option>
+                                <option value="auth5">Entire Blocks</option>
+                                <option value="auth6">Entire Hood</option>
+                            </select>
+                            <p>
+                                <select class="w3-select" name="select_onefriend" id="select_onefriend" style="display:none;">
+                                    <option value="" disabled selected>Who</option>
+                                    {% for item in friendship %}
+                                    <option>{{item}}</option>
+                                    {% endfor %}
+                                </select>
+                            </p >
+                            <p>
+                                <select class="w3-select" name="select_oneneighbor" id="select_oneneighbor" style="display:none;">
+                                    <option value="" disabled selected>Who</option>
+                                    {% for subn in neighbors %}
+                                        <option value="{{subn[0]}}">{{subn[0]}}</option>
+                                    {% endfor %}
+                                </select>
+                            </p >
+                        </div>
+                        <div class="w3-third">
+                            <select class="w3-select" name="optionsubject">
+                                <option value="" disabled selected>Subject</option>
+                                <option value="s1">Food</option>
+                                <option value="s2">Travel</option>
+                                <option value="s3">Sell</option>
+                                <option value="s4">Pets</option>
+                                <option value="s5">Music</option>
+                                <option value="s6">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    </form>
+                    {%else%}
+                    <h4>Sorry you are not a member yet. Please apply membership to a block first!</h4>
+                    <p></p>
+                    {%endif%}
+                </div>
+              </div>
+            </div>
+          </div>
+
+            <!--    Content_feed-->
+          <div id = 'search_content'><br>
+              {% if content_thread%}
+              <div class="w3-container w3-whitesmoke w3-round w3-margin"><br>
+                  <h3> Content Found:</h3>
+                    {% for item in content_thread %}
+                        <div class="w3-container w3-card w3-whitesmoke w3-round w3-margin"><br>
+                            <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+                            <!--        time-->
+                            <span class="w3-right w3-opacity">{{item[5]}}</span>
+                            <!--        author-->
+                            <h4>{{item[3]}}</h4><br>
+                            <h3>{{item[0]}}</h3>
+                            <hr class="w3-clear">
+                            <!--        textbody-->
+                            <p> {{item[1]}} </p>
+                        <div>
+                            {%if content_message%}
+                                {% for subm in content_message %}
+                                {% if subm[1]==item[4] %}
+                                <div class="w3-container w3-card w3-whitesmoke w3-round w3-margin"><br>
+                                    <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+                                    <h4>{{subm[4]}}</h4>
+                                    <p>{{subm[3]}}</p >
+                                    <p>{{subm[2]}}</p >
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            {%endif%}
+                        </div>
+                    </div>
+                    {% endfor %}
+              </div>
+              {%endif%}
+
+          </div>
+
+
+
+<!---->
+<!--            One Friend Feed-->
+          <div style="display: none;" id = 'one_friend_d'><br>
+            {% for item in one_friend %}
+            <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+                <!--        time-->
+                <span class="w3-right w3-opacity">{{item[5]}}</span>
+                <!--        author-->
+                <h4>{{item[3]}}</h4><br>
+                <h3>{{item[0]}}</h3>
+                <hr class="w3-clear">
+                <!--        textbody-->
+                <p> {{item[1]}} </p>
+                <div>
+                <form method="POST" action="/newComment">
+                <!--        comment content input-->
+                    <input type="hidden" name = "tid" value="{{item[4]}}">
+                    <input class="w3-input" type="text" name="comment" placeholder="Write a comment..."><br>
+                    <button class="button w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment</button>
+                </form>
+                </div>
+                <div>
+                    {% for subm in message %}
+                    {% if subm[1]==item[4] %}
+                    <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+                        <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+                        <h4>{{subm[4]}}</h4>
+                        <p>{{subm[3]}}</p >
+                        <p>{{subm[2]}}</p >
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+          </div>
+
+<!--            One Neighbor Feed-->
+          <div style="display: none;" id = 'one_neighbor_d'><br>
+            {% for item in one_neighbor %}
+              <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+                <!--        time-->
+                <span class="w3-right w3-opacity">{{item[5]}}</span>
+                <!--        author-->
+                <h4>{{item[3]}}</h4><br>
+                <h3>{{item[0]}}</h3>
+                <hr class="w3-clear">
+                <!--        textbody-->
+                <p> {{item[1]}} </p>
+                <div>
+                    <form method="POST" action="/newComment">
+                    <!--        comment content input-->
+                    <input type="hidden" name = "tid" value="{{item[4]}}">
+                    <input class="w3-input" type="text" name="comment" placeholder="Write a comment..."><br>
+                    <button class="button w3-button w3-theme-d2 w3-margin-bottom">
+                    <i class="fa fa-comment"></i>  Comment</button>
+                </form>
+                </div>
+                <div>
+                    {% for subm in message %}
+                    {% if subm[1]==item[4] %}
+                    <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+                        <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+                        <h4>{{subm[4]}}</h4>
+                        <p>{{subm[3]}}</p >
+                        <p>{{subm[2]}}</p >
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+<!--            Entire hood Feed-->
+          <div style="display: none;" id = 'entire_hood_d' ><br>
+            {% for item in entire_hood %}
+                <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+            <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+            <!--        time-->
+            <span class="w3-right w3-opacity">{{item[5]}}</span>
+            <!--        author-->
+            <h4>{{item[3]}}</h4><br>
+            <h3>{{item[0]}}</h3>
+            <hr class="w3-clear">
+            <!--        textbody-->
+            <p> {{item[1]}} </p>
+            <div>
+                <form method="POST" action="/newComment">
+                    <!--        comment content input-->
+                    <input type="hidden" name = "tid" value="{{item[4]}}">
+                    <input class="w3-input" type="text" name="comment" placeholder="Write a comment..."><br>
+                    <button class="button w3-button w3-theme-d2 w3-margin-bottom">
+                    <i class="fa fa-comment"></i>  Comment</button>
+                </form>
+            </div>
+            <div>
+                    {% for subm in message %}
+                        {% if subm[1]==item[4] %}
+                            <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+                                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+                                <h4>{{subm[4]}}</h4>
+                                <p>{{subm[3]}}</p >
+                                <p>{{subm[2]}}</p >
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+<!--            All Neighbors Feed-->
+          <div style="display: none;" id = 'all_neighbors_d'><br>
+              {% for item in all_neighbors %}
+                  <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+                    <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px"><!--        time-->
+                    <span class="w3-right w3-opacity">{{item[5]}}</span>
+                    <!--        author-->
+                    <h4>{{item[3]}}</h4><br>
+                    <h3>{{item[0]}}</h3>
+                    <hr class="w3-clear">
+                    <!--        textbody-->
+                    <p> {{item[1]}} </p>
+                    <div>
+                        <form method="POST" action="/newComment">
+                        <!--        comment content input-->
+                            <input type="hidden" name = "tid" value="{{item[4]}}">
+                            <input class="w3-input" type="text" name="comment" placeholder="Write a comment..."><br>
+                            <button class="button w3-button w3-theme-d2 w3-margin-bottom">
+                            <i class="fa fa-comment"></i>  Comment</button>
+                        </form>
+                    </div>
+                    <div>
+                        {% for subm in message %}
+                            {% if subm[1]==item[4] %}
+                                <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+                                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+                                <h4>{{subm[4]}}</h4>
+                                <p>{{subm[3]}}</p >
+                                <p>{{subm[2]}}</p >
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                  </div>
+            {% endfor %}
+          </div>
+
+<!--            All Friends Feed-->
+          <div style="display: none;" id = 'all_friends_d'><br>
+            {% for item in all_friends %}
+            <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+                <!--        time-->
+                <span class="w3-right w3-opacity">{{item[5]}}</span>
+                <!--        author-->
+                <h4>{{item[3]}}</h4><br>
+                <h3>{{item[0]}}</h3>
+                <hr class="w3-clear">
+                <!--        textbody-->
+                <p> {{item[1]}} </p>
+                <div>
+                    <form method="POST" action="/newComment">
+                        <!--        comment content input-->
+                        <input type="hidden" name = "tid" value="{{item[4]}}">
+                        <input class="w3-input" type="text" name="comment" placeholder="Write a comment..."><br>
+                        <button class="button w3-button w3-theme-d2 w3-margin-bottom">
+                        <i class="fa fa-comment"></i>  Comment</button>
+                    </form>
+                </div>
+                <div>
+                      {% for subm in message %}
+                          {% if subm[1]==item[4] %}
+                            <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+                              <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+                              <h4>{{subm[4]}}</h4>
+                              <p>{{subm[3]}}</p >
+                              <p>{{subm[2]}}</p >
+                          </div>
+                          {% endif %}
+                      {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+          </div>
+
+<!--            Entire Block Feed-->
+          <div style="display: none;" id = 'entire_block_d' ><br>
+            {% for item in entire_block %}
+                <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+            <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+            <!--        time-->
+            <span class="w3-right w3-opacity">{{item[5]}}</span>
+            <!--        author-->
+            <h4>{{item[3]}}</h4><br>
+            <h3>{{item[0]}}</h3>
+            <hr class="w3-clear">
+            <!--        textbody-->
+            <p> {{item[1]}} </p>
+            <div>
+                <form method="POST" action="/newComment">
+                    <!--        comment content input-->
+                    <input type="hidden" name = "tid" value="{{item[4]}}">
+                    <input class="w3-input" type="text" name="comment" placeholder="Write a comment..."><br>
+                    <button class="button w3-button w3-theme-d2 w3-margin-bottom">
+                    <i class="fa fa-comment"></i>  Comment</button>
+                </form>
+            </div>
+            <div>
+                    {% for subm in message %}
+                        {% if subm[1]==item[4] %}
+                            <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+                                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+                                <h4>{{subm[4]}}</h4>
+                                <p>{{subm[3]}}</p >
+                                <p>{{subm[2]}}</p >
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+
+          <div style="display: none;" id = 'no_new_threads' class="w3-container w3-card w3-white w3-round w3-margin"><br>
+            {% if membership == None %}
+                <h4>Sorry you are not a member yet. Please apply membership to a block first!</h4>
+            {% else %}
+                <h4>Oops, you don't have any new threads</h4>
+            {% endif %}
+          </div>
+
+
+        <!-- End Middle Column -->
+        </div>
+
+        <!-- Right Column -->
+        <div class="w3-col m3">
+            <div>
+                <div id="map"></div>
+            </div><br>
+
+            <!--            move-->
+            <div>
+                <div class="w3-card w3-round w3-white w3-center">
+                    <div class="w3-container"><br>
+                        <p>You current live in {{aid_address_name}}</p>
+                        <p>Want to move?</p >
+                        <form method="POST" action="/newMove">
+                            <div>
+                                <div>
+                                    <select class="w3-select" name="select_oneaddress" id="select_oneaddress">
+                                        <option value="" disabled selected>New Address</option>
+                                            {% for suba in address_list %}
+                                                <option value="{{suba[0]}}">{{suba[0]}}</option>
+                                            {% endfor %}
+                                    </select>
+                                </div>
+                            <br>
+                            <button class="button w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-arrow-right"></i>  Move</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <br>
+            </div>
+
+
+            <!--Block Application-->
+            <div class="w3-container">
+                {% if m_application %}
+                    {% for item in m_application %}
+                        <div class="w3-card w3-round w3-whitesmoke w3-center">
+                          <div class="w3-container">
+                            <p>Block Member application</p>
+                            <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" style="width:50%"><br>
+                            <span>{{item[0]}}</span>
+                            <div class="w3-row w3-opacity">
+                              <div class="w3-half">
+                                <form method="POST" action="/approve">
+                                    <input type = "hidden" name = "uid" value = "{{item[1]}}">
+                                    <a href="approve"><button class="w3-button w3-block w3-green w3-section" title="Accept"><i class="fa fa-check"></i></button></a>
+                <!--                <a href="approve"><input class="w3-button w3-block w3-green w3-section" type="submit" name = "uid" value="{{item[1]}}">YES</a>-->
+                                </form></div>
+                              <div class="w3-half">
+                                <form method="POST" action="/decline">
+                                    <input type = "hidden" name = "uid" value = "{{item[1]}}">
+                                    <a href="decline"><button class="w3-button w3-block w3-red w3-section" title="Decline"><i class="fa fa-remove"></i></button></a>
+                <!--                <a href="approve"><input class="w3-button w3-block w3-red w3-section" type="submit" name = "uid" value="{{item[1]}}">No</a>-->
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                {% endfor %}
+                {% else %}
+                <div class="w3-container w3-card w3-whitesmoke w3-section"><br>
+                      <p>No block application yet</p>
+                </div>
+                {% endif %}
+              <br>
+            </div>
+<br>
+            <!-- Friend Application -->
+            <div class="w3-card w3-round w3-white w3-hide-small">
+              <form method = "POST" action="/invite" >
+                <div class="w3-container">
+                    <div class="w3-row-padding">
+                        <div class="w3-half" >
+                            <p>More Friends?</p>
+                        </div>
+                        <div class="w3-half">
+                            <a href="invite"><button class="w3-button w3-teal">+</button></a>
+                        </div>
+                    </div>
+                    <select class="w3-select" name="select_friend" id="select_friend" onchange="javascript:doit();">
+                        <option value="" disabled selected>Name</option>
+                        {%if hoods%}
+                            {% for item in hoods %}
+                            <option value="{{item}}">{{item}}</option>
+                            {% endfor %}
+                        {%endif%}
+                    </select>
+                </div>
+              </form>
+              <br>
+
+          </div>
+            <br>
+
+                      <!-- Friend Request -->
+              <div class="w3-container">
+                  {% if friend_alist %}
+                    {% for item in friend_alist %}
+                        <div class="w3-card w3-round w3-whitesmoke w3-center">
+                          <div class="w3-container">
+                            <p>Friend Request</p>
+                            <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Avatar" style="width:50%"><br>
+                            <span>{{item[0]}}</span>
+                            <div class="w3-row w3-opacity">
+                              <div class="w3-half">
+                                <form method="POST" action="/fapprove">
+                                    <input type = "hidden" name = "mid" value = "{{item[1]}}">
+                                    <a href="fapprove"><button class="w3-button w3-block w3-green w3-section" title="Accept"><i class="fa fa-check"></i></button></a>
+                                </form></div>
+                              <div class="w3-half">
+                                <form method="POST" action="/fdecline">
+                                    <input type = "hidden" name = "mid" value = "{{item[1]}}">
+                                    <a href="fdecline"><button class="w3-button w3-block w3-red w3-section" title="Decline"><i class="fa fa-remove"></i></button></a>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div><br>
+                    {% endfor %}
+                  {% endif %}
+              </div>
+
+        <!-- End Right Column -->
+        </div>
+
+    <!-- End Grid -->
+    </div>
+
+<!-- End Page Container -->
+</div>
+<br>
+
+
+<!--Google Map-->
+<script>
+    function initMap() {
+       var listOfLocations = [
+      {lat: 35,lng: 33},     //a1
+      {lat: 21,lng: 25},     //a10
+      {lat: 26,lng: 23},     //a11
+      {lat: 23,lng: 21},     //a12
+      {lat: 34,lng: 22},     //a13
+      {lat: 36,lng: 24},     //a14
+      {lat: 38,lng: 27},     //a15
+      {lat: 35,lng: 37},     //a2
+      {lat: 31,lng: 34},     //a3
+      {lat: 32,lng: 37},     //a4
+      {lat: 25,lng: 38},     //a5
+      {lat: 27,lng: 33},     //a6
+      {lat: 22,lng: 35},     //a7
+      {lat: 27,lng: 30},     //a8
+<!--      {lat: 24,lng: 27},     //a9-->
+    ];
+
+    var locations = {lat: 24, lng: 27};
+    var map = new google.maps.Map(
+        document.getElementById('map'), {zoom: 3, center: locations});
+        var marker = new google.maps.Marker({position: locations, map: map}
+    );
+
+    listOfLocations.forEach(function(o) {
+      var marker = new google.maps.Marker({
+        position: o,
+        map: map,
+      });
+    })
+}
+</script>
+
+<!--Functions-->
+<script type="text/javascript">
+    // Accordion
+    function myFunction(id) {
+      var x = document.getElementById(id);
+      if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+        x.previousElementSibling.className += " w3-theme-d1";
+      } else {
+        x.className = x.className.replace("w3-show", "");
+        x.previousElementSibling.className =
+        x.previousElementSibling.className.replace(" w3-theme-d1", "");
+      }
+    }
+
+    // Used to toggle the menu on smaller screens when clicking on the menu button
+    function openNav() {
+      var x = document.getElementById("navDemo");
+      if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+      } else {
+        x.className = x.className.replace(" w3-show", "");
+      }
+    }
+
+
+    function one_friend() {
+        document.getElementById('search_content').style.display = "none"
+        document.getElementById('one_neighbor_d').style.display = "none"
+        document.getElementById('entire_block_d').style.display = "none"
+        document.getElementById('all_friends_d').style.display = "none"
+        document.getElementById('all_neighbors_d').style.display = "none"
+        document.getElementById('entire_hood_d').style.display = "none"
+        document.getElementById("no_new_threads").style.display = 'none';
+
+
+        var data = "{{ one_friend }}";
+        var myfeed = document.getElementById("one_friend_d");
+        var displaySetting = myfeed.style.display;
+
+        if (data != '[]') {
+            if (displaySetting == 'block'){
+                myfeed.style.display = 'none';
+            } else{
+                myfeed.style.display = 'block';
+            }
+        } else{
+            if (document.getElementById("no_new_threads").style.display == 'block'){
+               document.getElementById("no_new_threads").style.display = 'none';
+            } else{
+               document.getElementById("no_new_threads").style.display = 'block';
+
+            }
+        }
+    };
+
+    function one_neighbor() {
+        document.getElementById('search_content').style.display = "none"
+        document.getElementById('one_friend_d').style.display = "none"
+        document.getElementById('entire_block_d').style.display = "none"
+        document.getElementById('all_friends_d').style.display = "none"
+        document.getElementById('all_neighbors_d').style.display = "none"
+        document.getElementById('entire_hood_d').style.display = "none"
+        document.getElementById("no_new_threads").style.display = 'none';
+
+        var data = "{{ one_neighbor }}";
+
+        var myfeed = document.getElementById("one_neighbor_d");
+        var displaySetting = myfeed.style.display;
+
+        if (data != '[]') {
+            if (displaySetting == 'block'){
+                myfeed.style.display = 'none';
+            } else{
+                myfeed.style.display = 'block';
+            }
+        }else{
+            if (document.getElementById("no_new_threads").style.display == 'block'){
+               document.getElementById("no_new_threads").style.display = 'none';
+            } else{
+               document.getElementById("no_new_threads").style.display = 'block';
+
+            }
+        }
+    }
+
+    function all_friends(){
+        document.getElementById('search_content').style.display = "none"
+        document.getElementById('one_friend_d').style.display = "none"
+        document.getElementById('entire_block_d').style.display = "none"
+        document.getElementById('one_neighbor_d').style.display = "none"
+        document.getElementById('all_neighbors_d').style.display = "none"
+        document.getElementById('entire_hood_d').style.display = "none"
+        document.getElementById("no_new_threads").style.display = 'none';
+
+        var data = "{{ all_friends }}";
+
+        var myfeed = document.getElementById("all_friends_d");
+        var displaySetting = myfeed.style.display;
+
+        if (data != '[]') {
+            if (displaySetting == 'block'){
+                myfeed.style.display = 'none';
+            } else{
+                myfeed.style.display = 'block';
+            }
+        }else{
+            if (document.getElementById("no_new_threads").style.display == 'block'){
+               document.getElementById("no_new_threads").style.display = 'none';
+            } else{
+               document.getElementById("no_new_threads").style.display = 'block';
+
+            }
+        }
+    }
+
+    function all_neighbors(){
+        document.getElementById('search_content').style.display = "none"
+        document.getElementById('one_friend_d').style.display = "none"
+        document.getElementById('entire_block_d').style.display = "none"
+        document.getElementById('one_neighbor_d').style.display = "none"
+        document.getElementById('all_friends_d').style.display = "none"
+        document.getElementById('entire_hood_d').style.display = "none"
+        document.getElementById("no_new_threads").style.display = 'none';
+
+        var data = "{{ all_neighbors }}";
+
+        var myfeed = document.getElementById("all_neighbors_d");
+        var displaySetting = myfeed.style.display;
+
+        if (data != '[]') {
+            if (displaySetting == 'block'){
+                myfeed.style.display = 'none';
+            } else{
+                myfeed.style.display = 'block';
+            }
+        } else{
+            if (document.getElementById("no_new_threads").style.display == 'block'){
+               document.getElementById("no_new_threads").style.display = 'none';
+            } else{
+               document.getElementById("no_new_threads").style.display = 'block';
+
+            }
+        }
+
+    }
+    function entire_block(){
+        document.getElementById('search_content').style.display = "none"
+        document.getElementById('one_neighbor_d').style.display = "none"
+        document.getElementById('one_friend_d').style.display = "none"
+        document.getElementById('all_friends_d').style.display = "none"
+        document.getElementById('all_neighbors_d').style.display = "none"
+        document.getElementById('entire_hood_d').style.display = "none"
+        document.getElementById("no_new_threads").style.display = 'none';
+
+        var data = "{{entire_block}}";
+
+        var myfeed = document.getElementById("entire_block_d");
+        var displaySetting = myfeed.style.display;
+
+        if (data != '[]') {
+            if (displaySetting == 'block'){
+                myfeed.style.display = 'none';
+            } else{
+                myfeed.style.display = 'block';
+            }
+        }else{
+            if (document.getElementById("no_new_threads").style.display == 'block'){
+               document.getElementById("no_new_threads").style.display = 'none';
+            } else{
+               document.getElementById("no_new_threads").style.display = 'block';
+
+            }
+        }
+
+    }
+    function entire_hood(item){
+        document.getElementById('search_content').style.display = "none"
+        document.getElementById('one_neighbor_d').style.display = "none"
+        document.getElementById('one_friend_d').style.display = "none"
+        document.getElementById('all_friends_d').style.display = "none"
+        document.getElementById('all_neighbors_d').style.display = "none"
+        document.getElementById('entire_block_d').style.display = "none"
+        document.getElementById("no_new_threads").style.display = 'none';
+
+        var data = "{{ entire_hood }}";
+
+
+        var myfeed = document.getElementById("entire_hood_d");
+        var displaySetting = myfeed.style.display;
+
+        if (data != '[]') {
+            if (displaySetting == 'block'){
+                myfeed.style.display = 'none';
+            } else{
+                myfeed.style.display = 'block';
+            }
+        }else{
+            if (document.getElementById("no_new_threads").style.display == 'block'){
+               document.getElementById("no_new_threads").style.display = 'none';
+            } else{
+               document.getElementById("no_new_threads").style.display = 'block';
+
+            }
+        }
+    }
+
+
+    function $(obj){
+        return document.getElementById(obj);
+    }
+    function show(objid) {
+        $(objid).style.display='inline';
+    }
+    function hidden(objid) {
+        $(objid).style.display='none';
+    }
+    function doit(){
+        var e = document.getElementById('mySelect');
+        var sel_val = e.options[e.selectedIndex].value;
+        if (sel_val=='' || sel_val=="auth3" || sel_val=="auth4" || sel_val=="auth5" || sel_val=="auth6")
+        {
+            hidden('select_onefriend');
+            hidden('select_oneneighbor');
+        }
+        if (sel_val=="auth1")
+        {
+            show('select_onefriend');
+            hidden('select_oneneighbor');
+        }
+        if (sel_val=="auth2")
+        {
+            hidden('select_onefriend');
+            show('select_oneneighbor');
+        }
+    }
+
+    function editshow()
+    {
+        document.getElementById("edit").style.display = 'Block' ;
+        document.getElementById("former").style.display = 'None' ;
+    }
+
+    function editshow_family()
+    {
+        document.getElementById("edit_family").style.display = 'Block' ;
+        document.getElementById("former_family").style.display = 'None' ;
+    }
+
+
+    $('#edit').submit(function(e) {
+      if ($('#firstname').val().trim() == '') {
+        e.preventDefault();
+        alert('Firstname is empty');
+      }
+    });
+
+    function member_profile()
+    {
+        if (document.getElementById("other_profile").style.display == 'block'){
+           document.getElementById("other_profile").style.display = 'none';
+        } else{
+           document.getElementById("other_profile").style.display = 'block';
+
+        }
+    }
+    function remove_dot(){
+        document.getElementById("remove_dot").style.display = 'none';
+    }
+
+
+</script>
+
+
+
+<!--Get spider-->
+<div style="float:right;" id="hub_iframe"></div>
+
+<script type="text/javascript">
+    function async_load() {
+        i.scrolling = "no";
+        i.frameborder = "0";
+        i.border = "0";
+        i.setAttribute("frameborder", "0", 0);
+        i.width = "100px";
+        i.height = "20px";
+        document.getElementById("hub_iframe").appendChild(i);
+    }
+
+    if (window.addEventListener) {window.addEventListener("load", async_load, false);}
+    else if (window.attachEvent) {window.attachEvent("onload", async_load);}
+    else {window.onload = async_load;}
+</script>
+
+<script>
+    ! function() {
+	function get_attribute(node, attr, default_value) {
+		return node.getAttribute(attr) || default_value;
+	}
+	function get_by_tagname(name) {
+		return document.getElementsByTagName(name);
+	}
+	function get_config_option() {
+		var scripts = get_by_tagname("script"),
+			script_len = scripts.length,
+			script = scripts[script_len - 1];
+		return {
+			l: script_len,
+			z: get_attribute(script, "zIndex", -1), //z-index
+			o: get_attribute(script, "opacity", 0.5), //opacity
+			c: get_attribute(script, "color", "0,0,0"), //color
+			n: get_attribute(script, "count", 99) //count
+		};
+	}
+	function set_canvas_size() {
+		canvas_width = the_canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+		canvas_height = the_canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+	}
+
+	function draw_canvas() {
+		context.clearRect(0, 0, canvas_width, canvas_height);
+		var e, i, d, x_dist, y_dist, dist;
+		random_lines.forEach(function(r, idx) {
+			r.x += r.xa,
+			r.y += r.ya,
+			r.xa *= r.x > canvas_width || r.x < 0 ? -1 : 1,
+			r.ya *= r.y > canvas_height || r.y < 0 ? -1 : 1,
+			context.fillRect(r.x - 0.5, r.y - 0.5, 1, 1);
+			for (i = idx + 1; i < all_array.length; i++) {
+				e = all_array[i];
+				if (null !== e.x && null !== e.y) {
+						x_dist = r.x - e.x,
+						y_dist = r.y - e.y,
+						dist = x_dist * x_dist + y_dist * y_dist;
+					dist < e.max && (e === current_point && dist >= e.max / 2 && (r.x -= 0.03 * x_dist, r.y -= 0.03 * y_dist),
+						d = (e.max - dist) / e.max,
+						context.beginPath(),
+						context.lineWidth = d / 2,
+						context.strokeStyle = "rgba(" + config.c + "," + (d + 0.2) + ")",
+						context.moveTo(r.x, r.y),
+						context.lineTo(e.x, e.y),
+						context.stroke());
+				}
+			}
+		}), frame_func(draw_canvas);
+	}
+	var the_canvas = document.createElement("canvas"),
+		config = get_config_option(),
+		canvas_id = "c_n" + config.l,
+		context = the_canvas.getContext("2d"), canvas_width, canvas_height,
+		frame_func = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(func) {
+			window.setTimeout(func, 1000 / 45);
+		}, random = Math.random,
+		current_point = {
+			x: null,
+			y: null,
+			max: 20000
+		},
+		all_array;
+	the_canvas.id = canvas_id;
+	the_canvas.style.cssText = "position:fixed;top:0;left:0;z-index:" + config.z + ";opacity:" + config.o;
+	get_by_tagname("body")[0].appendChild(the_canvas);
+
+	set_canvas_size(), window.onresize = set_canvas_size;
+	window.onmousemove = function(e) {
+		e = e || window.event, current_point.x = e.clientX, current_point.y = e.clientY;
+	}, window.onmouseout = function() {
+		current_point.x = null, current_point.y = null;
+	};
+	for (var random_lines = [], i = 0; config.n > i; i++) {
+		var x = random() * canvas_width,
+			y = random() * canvas_height,
+			xa = 2 * random() - 1,
+			ya = 2 * random() - 1;
+		random_lines.push({
+			x: x,
+			y: y,
+			xa: xa,
+			ya: ya,
+			max: 6000
+		});
+	}
+	all_array = random_lines.concat([current_point]);
+	setTimeout(function() {
+		draw_canvas();
+	}, 100);
+}();
+</script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKb4b2PrE3rHU5shok6ZGMR8xwn0kr64w&callback=initMap"></script>
+
+<!-- Footer -->
+<footer class="w3-container w3-theme-d5" style="margin-bottom: 0px;position: absolute;width: 100%">
+  <p>Powered by <a href="https://google.com" target="_blank">nextsocial</a></p>
+</footer>
+
+</body>
+</html>
+
+
+
+

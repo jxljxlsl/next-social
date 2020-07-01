@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block content %}
+{% if error %}
+    <div class="notification is-danger">
+        {{ error }}
+    </div>
+{% endif %}
+<head>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKb4b2PrE3rHU5shok6ZGMR8xwn0kr64w"type="text/javascript"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</head>
+
+<div class="column is-4 is-offset-4">
+    <h3 class="title">New User Register</h3>
+    <div class="box">
+        <form method="POST" action="/signup">
+            <div class="field">
+                <div class="control">
+                    <i class="fa fa-user icon"></i>
+                    <input class="input is-large" type="username" name="username" placeholder="Username*" autofocus="">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <i class="fa fa-key icon"></i>
+                    <input class="input is-large" type="password" name="password" placeholder="Password*">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <i class="fa fa-home"></i>
+                    <div>
+                        <div>
+                            <select class="w3-select" name="select_oneaddress" id="select_oneaddress">
+                                <option value="" disabled selected>New Address</option>
+                                    {% for suba in address_list %}
+                                        <option value="{{suba[0]}}">{{suba[0]}}</option>
+                                    {% endfor %}
+                            </select>
+                        </div>
+<!--                            <button class="button w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-arrow-right"></i>  Move</button>-->
+                    </div>
+
+                    <input type = "hidden" class="input is-large" id="locationText" type="address" name="address" placeholder="Address*">
+                    <div class="modal fade" id="google_maps_api" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close"data-dismiss="modal" aria-hidden="true">&times;</button>
+                          </div>
+                          <div class="modal-body">
+                            <div id="map_canvas" style="width: 100%; height: 450px"></div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">submit</button>
+                          </div>
+                        </div>
+                        </div>
+                    </div>
+                    <button type="button" style = "float:right" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#google_maps_api">GoogleMap</button>
+                </div><br>
+            </div><br>
+
+            <button class="button is-block is-info is-large is-fullwidth">Sign Up</button>
+        </form>
+    </div>
+</div>
+
+<script>
+  var googleMap = {
+    map: null,
+    markers: {},
+    currentId: 0,
+
+    uniqueId: function () {
+        return ++this.currentId;
+    },
+
+    infowindow: new google.maps.InfoWindow({
+        size: new google.maps.Size(150, 50)
+    }),
+
+    initialize: function () {
+        if (this.map) return null;
+
+        var myOptions = {
+            zoom: 3,
+            center: new google.maps.LatLng(34, 103),
+            mapTypeControl: true,
+            mapTypeControlOptions: {style: google.maps.MapTypeControlStyle.DROPDOWN_MENU},
+            navigationControl: true,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        this.map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
+
+        google.maps.event.addListener(this.map, 'click', function () {
+            googleMap.infowindow.close();
+        });
+
+        google.maps.event.addListener(this.map, 'click', function (event) {
+            var Latitude = event.latLng.lat().toFixed(2);
+            var longitude = event.latLng.lng().toFixed(2);
+            googleMap.addMarker(event.latLng, "name", "<b>Location</b><br>" +Latitude +","+ longitude,
+                Latitude +","+ longitude);
+        });
+    },
+
+    addMarker: function (Gpoint, name, contentString, geo) {
+        var id = this.uniqueId(); // get new id
+        marker = new google.maps.Marker({
+            id: id,
+            position: Gpoint,
+            geo : geo,
+            map: googleMap.map,
+            draggable: true,
+            animation: google.maps.Animation.DROP
+        });
+
+        google.maps.event.addListener(marker, 'click', function () {
+            googleMap.infowindow.setPosition(this.position);
+            googleMap.infowindow.setContent(contentString);
+            googleMap.infowindow.open(googleMap.map, marker);
+        });
+        google.maps.event.trigger(marker, 'click');
+
+        googleMap.map.panTo(Gpoint);
+
+        this.markers[id] = marker;
+
+        google.maps.event.addListener(marker, "rightclick", function (point) {
+            googleMap.delMarker(this.id)
+        });
+    },
+
+    delMarker: function (id) {
+        this.markers[id].setMap(null);
+        delete this.markers[id];
+    }
+};
+
+</script>
+
+<script>
+$("#google_maps_api").on("shown.bs.modal", function () {
+  googleMap.initialize();
+}).on('hide.bs.modal', function () {
+  var res = '';
+  for (var i in googleMap.markers)
+    res += '(' + googleMap.markers[i].geo + '),';
+
+  res = res.substring(0,res.length-1);
+  $("#locationText").val(res);
+});
+</script>
+
+{% endblock %}
